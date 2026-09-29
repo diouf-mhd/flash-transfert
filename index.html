@@ -66,13 +66,36 @@
 
         installButton.addEventListener('click', function () {
           if (deferredPrompt) {
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.finally(function () {
+            var promptEvent = deferredPrompt;
+            deferredPrompt = null;
+            promptEvent.prompt().then(function () {
+              return promptEvent.userChoice;
+            }).then(function (choice) {
+              if (choice.outcome === 'accepted') {
+                message.textContent = 'FlashMoney est en cours d’installation.';
+                installButton.textContent = 'Installation lancée';
+                installButton.disabled = true;
+                return;
+              }
+              message.textContent = 'L’installation n’a pas été lancée. Vous pouvez l’ajouter depuis le menu du navigateur.';
+              steps.hidden = false;
+            }).catch(function () {
+              message.textContent = 'Cette installation doit être lancée depuis le menu du navigateur.';
+              steps.hidden = false;
+            }).finally(function () {
               deferredPrompt = null;
             });
             return;
           }
-          steps.hidden = !steps.hidden;
+
+          steps.hidden = false;
+          if (isIOS) {
+            message.textContent = 'Pour installer FlashMoney, utilisez le menu Partager de Safari.';
+          } else {
+            message.textContent = 'L’installation directe n’est pas disponible dans ce navigateur. Suivez ces étapes :';
+          }
+          installButton.textContent = 'Étapes affichées';
+          installButton.disabled = true;
         });
 
         closeButton.addEventListener('click', function () {

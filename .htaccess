@@ -1,0 +1,38 @@
+# 1. Gestion des CORS (Indispensable pour l'APK)
+<IfModule mod_headers.c>
+    # On utilise "always set" pour s'assurer que même en cas d'erreur, le header est présent
+    Header always set Access-Control-Allow-Origin "*"
+    Header always set Access-Control-Allow-Methods "POST, GET, OPTIONS"
+    Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"
+</IfModule>
+
+# 2. Gestion du pré-contrôle (OPTIONS) pour les navigateurs/APK
+RewriteEngine On
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteRule ^(.*)$ $1 [R=200,L]
+
+# 3. EXCEPTION : Laisser passer proxy.php directement
+# On s'assure que le serveur ne cherche pas à traiter proxy.php comme une route React
+RewriteCond %{REQUEST_URI} ^/proxy\.php [NC]
+RewriteRule .* - [L]
+
+# 4. Redirection React (SPA)
+# Si le fichier ou le dossier demandé n'existe pas, on renvoie vers index.html
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [QSA,L]
+
+# 5. Sécurité : Empêcher le listing des répertoires
+Options -Indexes
+# 6. PWA : types MIME et mise à jour du Service Worker
+<IfModule mod_mime.c>
+    AddType application/manifest+json .webmanifest
+</IfModule>
+<IfModule mod_headers.c>
+    <Files "sw.js">
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+    </Files>
+    <Files "manifest.webmanifest">
+        Header set Cache-Control "no-cache"
+    </Files>
+</IfModule>

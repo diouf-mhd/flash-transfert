@@ -29,6 +29,71 @@
   <body>
     <div id="root"></div>
     <script>
+      (function () {
+        var userAgent = navigator.userAgent || '';
+        var isIOS = /iPad|iPhone|iPod/.test(userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        var isAndroid = /Android/i.test(userAgent);
+        var isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+
+        if ((!isIOS && !isAndroid) || isStandalone || sessionStorage.getItem('flashmoney-install-dismissed') === '1') return;
+
+        var deferredPrompt = null;
+        var banner = document.createElement('section');
+        banner.id = 'pwa-install-banner';
+        banner.setAttribute('role', 'region');
+        banner.setAttribute('aria-label', 'Installation de FlashMoney');
+        banner.innerHTML = '<style>' +
+          '#pwa-install-banner{box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px max(16px,calc((100% - 1120px)/2));background:#111827;color:#fff;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif}' +
+          '#pwa-install-banner *{box-sizing:border-box}#pwa-install-banner .pwa-install-copy{min-width:0}#pwa-install-banner strong{display:block;font-size:15px}#pwa-install-banner p{margin:2px 0 0;color:#d1d5db}#pwa-install-banner .pwa-install-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}#pwa-install-banner button{border:0;border-radius:6px;padding:8px 12px;font:600 13px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;cursor:pointer}#pwa-install-banner .pwa-install-primary{background:#fff;color:#111827}#pwa-install-banner .pwa-install-secondary{background:transparent;color:#fff;padding:8px;font-size:20px}#pwa-install-banner .pwa-install-steps{margin-top:8px;color:#fff}#pwa-install-banner[hidden]{display:none}@media(max-width:520px){#pwa-install-banner{align-items:flex-start;gap:8px;padding:10px 12px}#pwa-install-banner .pwa-install-actions{gap:4px}#pwa-install-banner button{padding:8px 9px}}' +
+          '</style>' +
+          '<div class="pwa-install-copy"><strong>Installer FlashMoney</strong><p class="pwa-install-message"></p><p class="pwa-install-steps" hidden></p></div>' +
+          '<div class="pwa-install-actions"><button class="pwa-install-primary" type="button"></button><button class="pwa-install-secondary" type="button" aria-label="Masquer le message" title="Masquer">×</button></div>';
+
+        var message = banner.querySelector('.pwa-install-message');
+        var steps = banner.querySelector('.pwa-install-steps');
+        var installButton = banner.querySelector('.pwa-install-primary');
+        var closeButton = banner.querySelector('.pwa-install-secondary');
+
+        if (isIOS) {
+          message.textContent = 'Ajoutez l’app à votre écran d’accueil pour la retrouver facilement.';
+          steps.textContent = 'Dans Safari, touchez Partager, puis « Sur l’écran d’accueil ». ';
+          installButton.textContent = 'Comment faire ?';
+        } else {
+          message.textContent = 'Ajoutez l’app à votre écran d’accueil pour la retrouver facilement.';
+          steps.textContent = 'Ouvrez le menu ⋮ du navigateur, puis choisissez « Installer l’application » ou « Ajouter à l’écran d’accueil ». ';
+          installButton.textContent = 'Installer';
+        }
+
+        installButton.addEventListener('click', function () {
+          if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.finally(function () {
+              deferredPrompt = null;
+            });
+            return;
+          }
+          steps.hidden = !steps.hidden;
+        });
+
+        closeButton.addEventListener('click', function () {
+          sessionStorage.setItem('flashmoney-install-dismissed', '1');
+          banner.remove();
+        });
+
+        window.addEventListener('beforeinstallprompt', function (event) {
+          event.preventDefault();
+          deferredPrompt = event;
+          installButton.textContent = 'Installer';
+        });
+
+        window.addEventListener('appinstalled', function () {
+          banner.remove();
+        });
+
+        document.body.insertBefore(banner, document.getElementById('root'));
+      })();
+    </script>
+    <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', function () {
           navigator.serviceWorker.register('/sw.js').catch(function (error) {

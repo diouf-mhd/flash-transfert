@@ -10,18 +10,18 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="FlashMoney" />
+    <meta name="apple-mobile-web-app-title" content="Flash Transfert" />
+    <link rel="icon" href="/favicon.ico" type="image/jpeg" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/pwa-192.png" />
 
-    <meta property="og:title" content="FlashMoney — Le transfert à la vitesse de l'éclair" />
+    <meta property="og:title" content="Flash Transfert — Le transfert à la vitesse de l'éclair" />
     <meta property="og:description" content="Passerelle d'interopérabilité Mobile Money au Sénégal" />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta property="og:image" content="/pwa-512.png" />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@Lovable" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta name="twitter:image" content="/pwa-512.png" />
     <script type="module" crossorigin src="/assets/index-y2_YvkZG.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-CPt7ueOa.css">
   </head>
@@ -35,18 +35,18 @@
         var isAndroid = /Android/i.test(userAgent);
         var isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
 
-        if ((!isIOS && !isAndroid) || isStandalone || sessionStorage.getItem('flashmoney-install-dismissed') === '1') return;
+        if ((!isIOS && !isAndroid) || isStandalone || sessionStorage.getItem('flash-transfert-install-dismissed') === '1') return;
 
         var deferredPrompt = null;
         var banner = document.createElement('section');
         banner.id = 'pwa-install-banner';
         banner.setAttribute('role', 'region');
-        banner.setAttribute('aria-label', 'Installation de FlashMoney');
+        banner.setAttribute('aria-label', 'Installation de Flash Transfert');
         banner.innerHTML = '<style>' +
           '#pwa-install-banner{box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px max(16px,calc((100% - 1120px)/2));background:#111827;color:#fff;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif}' +
           '#pwa-install-banner *{box-sizing:border-box}#pwa-install-banner .pwa-install-copy{min-width:0}#pwa-install-banner strong{display:block;font-size:15px}#pwa-install-banner p{margin:2px 0 0;color:#d1d5db}#pwa-install-banner .pwa-install-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}#pwa-install-banner button{border:0;border-radius:6px;padding:8px 12px;font:600 13px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;cursor:pointer}#pwa-install-banner .pwa-install-primary{background:#fff;color:#111827}#pwa-install-banner .pwa-install-secondary{background:transparent;color:#fff;padding:8px;font-size:20px}#pwa-install-banner .pwa-install-steps{margin-top:8px;color:#fff}#pwa-install-banner[hidden]{display:none}@media(max-width:520px){#pwa-install-banner{align-items:flex-start;gap:8px;padding:10px 12px}#pwa-install-banner .pwa-install-actions{gap:4px}#pwa-install-banner button{padding:8px 9px}}' +
           '</style>' +
-          '<div class="pwa-install-copy"><strong>Installer FlashMoney</strong><p class="pwa-install-message"></p><p class="pwa-install-steps" hidden></p></div>' +
+          '<div class="pwa-install-copy"><strong>Installer Flash Transfert</strong><p class="pwa-install-message"></p><p class="pwa-install-steps" hidden></p></div>' +
           '<div class="pwa-install-actions"><button class="pwa-install-primary" type="button"></button><button class="pwa-install-secondary" type="button" aria-label="Masquer le message" title="Masquer">×</button></div>';
 
         var message = banner.querySelector('.pwa-install-message');
@@ -72,7 +72,7 @@
               return promptEvent.userChoice;
             }).then(function (choice) {
               if (choice.outcome === 'accepted') {
-                message.textContent = 'FlashMoney est en cours d’installation.';
+                message.textContent = 'Flash Transfert est en cours d’installation.';
                 installButton.textContent = 'Installation lancée';
                 installButton.disabled = true;
                 return;
@@ -90,7 +90,7 @@
 
           steps.hidden = false;
           if (isIOS) {
-            message.textContent = 'Pour installer FlashMoney, utilisez le menu Partager de Safari.';
+            message.textContent = 'Pour installer Flash Transfert, utilisez le menu Partager de Safari.';
           } else {
             message.textContent = 'L’installation directe n’est pas disponible dans ce navigateur. Suivez ces étapes :';
           }
@@ -99,7 +99,7 @@
         });
 
         closeButton.addEventListener('click', function () {
-          sessionStorage.setItem('flashmoney-install-dismissed', '1');
+          sessionStorage.setItem('flash-transfert-install-dismissed', '1');
           banner.remove();
         });
 

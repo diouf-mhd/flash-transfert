@@ -1,4 +1,4 @@
-const CACHE_NAME = 'flashmoney-pwa-v1';
+const CACHE_NAME = 'flash-transfert-pwa-v2';
 const APP_SHELL = [
   '/',
   '/index.html',
